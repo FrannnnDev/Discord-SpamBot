@@ -3,7 +3,7 @@ from discord.ext import commands
 import asyncio
 import time
 
-INVITE_LINK = "https://discord.gg/95cppXTqa3" # JOIN MY DISCORD SERVER (YOU CAN CHANGE THE INVITE LINK ONLY IS A REMINDER AFTER SPAM (ONLY U CAN SEE THE REMINDER))
+INVITE_LINK = "https://discord.gg/CB2v6Dmw" # JOIN MY DISCORD SERVER (YOU CAN CHANGE THE INVITE LINK ONLY IS A REMINDER AFTER SPAM (ONLY U CAN SEE THE REMINDER))
 
 class MyBot(commands.Bot):
     def __init__(self):
