@@ -3,7 +3,7 @@ from discord.ext import commands
 import asyncio
 import time
 
-INVITE_LINK = "https://discord.gg/95cppXTqa3" # JOIN MY DISCORD SERVER (YOU CAN CHANGE THE INVITE LINK ONLY IS A REMINDER AFTER SPAM (ONLY U CAN SEE THE REMINDER))
+INVITE_LINK = "Our discord jn reminder (for distribution)" 
 
 class MyBot(commands.Bot):
     def __init__(self):
@@ -32,7 +32,7 @@ async def spamcustom(interaction: discord.Interaction, text: str):
 
     try:
         user_id = interaction.user.id
-        cooldown_time = 4 # YOUR CUSTOM COLDOWN
+        cooldown_time = 4
 
         last_used = bot.command_cooldowns.get(user_id, 0)
         time_since_last_use = time.time() - last_used
@@ -58,7 +58,6 @@ async def spamcustom(interaction: discord.Interaction, text: str):
         )
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
-        # Spam message settings
         num_responses = 10
         interval_ms = 150
         interval = interval_ms / 1000.0
@@ -75,3 +74,4 @@ async def spamcustom(interaction: discord.Interaction, text: str):
         print(f"Unexpected error")
 
 bot.run("YOUR BOT TOKEN")
+
