@@ -10,7 +10,6 @@ INVITE_LINK = "Our discord jn reminder (for distribution)"
 class MyBot(commands.Bot):
     def __init__(self):
         intents = discord.Intents.default()
-        intents.members = True
         intents.message_content = True
         super().__init__(command_prefix="!", intents=intents)
         self.command_cooldowns = {} 
@@ -27,7 +26,6 @@ bot = MyBot()
 @bot.event
 async def on_ready():
     print(f"Bot connected as {bot.user}")
-    await bot.setup_hook()
 
 @bot.tree.command(name="spamcustom", description="Sends your custom message wherever you want")
 async def spamcustom(interaction: discord.Interaction, text: str):
@@ -86,6 +84,7 @@ COLOR_MAP = {
 
 @bot.tree.command(name="sendembed", description="Sends an embed with your message, a color, and an optional file")
 @app_commands.describe(
+    title="The title of the embed",
     message="The message to include in the embed",
     color="Choose the embed color",
     file="Optional file to attach"
@@ -100,6 +99,7 @@ COLOR_MAP = {
 ])
 async def sendembed(
     interaction: discord.Interaction,
+    title: str,
     message: str,
     color: app_commands.Choice[str],
     file: Optional[discord.Attachment] = None
@@ -107,9 +107,11 @@ async def sendembed(
     try:
         embed_color = COLOR_MAP.get(color.value, discord.Color.from_rgb(255, 255, 255))
 
+        formatted_message = message.replace("\\n", "\n")
+
         embed = discord.Embed(
-            title="Message",
-            description=message,
+            title=title,
+            description=formatted_message,
             color=embed_color
         )
 
