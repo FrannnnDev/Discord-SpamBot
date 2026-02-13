@@ -1,7 +1,9 @@
 import discord
 from discord.ext import commands
+from discord import app_commands
 import asyncio
 import time
+from typing import Optional
 
 INVITE_LINK = "Our discord jn reminder (for distribution)" 
 
@@ -41,7 +43,7 @@ async def spamcustom(interaction: discord.Interaction, text: str):
             remaining_time = cooldown_time - time_since_last_use
 
             embed = discord.Embed(
-                title="⏳ Cooldown Active",
+                title="Cooldown Active",
                 description=f"Please wait **{remaining_time:.1f} seconds** before using this command again.",
                 color=discord.Color.from_rgb(255, 0, 0) 
             )
@@ -73,5 +75,63 @@ async def spamcustom(interaction: discord.Interaction, text: str):
     except Exception as e:
         print(f"Unexpected error")
 
-bot.run("YOUR BOT TOKEN")
+COLOR_MAP = {
+    "red": discord.Color.from_rgb(255, 0, 0),
+    "blue": discord.Color.from_rgb(0, 100, 255),
+    "green": discord.Color.from_rgb(0, 200, 0),
+    "yellow": discord.Color.from_rgb(255, 255, 0),
+    "purple": discord.Color.from_rgb(160, 0, 255),
+    "orange": discord.Color.from_rgb(255, 165, 0),
+}
 
+@bot.tree.command(name="sendembed", description="Sends an embed with your message, a color, and an optional file")
+@app_commands.describe(
+    message="The message to include in the embed",
+    color="Choose the embed color",
+    file="Optional file to attach"
+)
+@app_commands.choices(color=[
+    app_commands.Choice(name="Red", value="red"),
+    app_commands.Choice(name="Blue", value="blue"),
+    app_commands.Choice(name="Green", value="green"),
+    app_commands.Choice(name="Yellow", value="yellow"),
+    app_commands.Choice(name="Purple", value="purple"),
+    app_commands.Choice(name="Orange", value="orange"),
+])
+async def sendembed(
+    interaction: discord.Interaction,
+    message: str,
+    color: app_commands.Choice[str],
+    file: Optional[discord.Attachment] = None
+):
+    try:
+        embed_color = COLOR_MAP.get(color.value, discord.Color.from_rgb(255, 255, 255))
+
+        embed = discord.Embed(
+            title="Message",
+            description=message,
+            color=embed_color
+        )
+        embed.set_footer(text=f"Sent by {interaction.user.display_name}")
+
+        file_to_send = None
+        if file:
+            file_to_send = await file.to_file()
+            embed.add_field(name="Attached file", value=file.filename, inline=False)
+
+        if file_to_send:
+            await interaction.response.send_message(embed=embed, file=file_to_send)
+        else:
+            await interaction.response.send_message(embed=embed)
+
+    except discord.Forbidden:
+        await interaction.response.send_message("I don't have permissions to send messages here.", ephemeral=True)
+    except discord.HTTPException as e:
+        print(f"HTTP error: {e}")
+        await interaction.response.send_message("An error occurred while sending the embed.", ephemeral=True)
+    except Exception as e:
+        print(f"Unexpected error: {e}")
+        await interaction.response.send_message("Something went wrong.", ephemeral=True)
+
+token = input("Enter your bot token: ")
+bot.run(token)
