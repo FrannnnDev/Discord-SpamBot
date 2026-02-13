@@ -105,6 +105,8 @@ async def sendembed(
     file: Optional[discord.Attachment] = None
 ):
     try:
+        await interaction.response.send_message("Embed sent.", ephemeral=True)
+
         embed_color = COLOR_MAP.get(color.value, discord.Color.from_rgb(255, 255, 255))
         formatted_message = message.replace("\\n", "\n")
 
@@ -119,18 +121,16 @@ async def sendembed(
             file_to_send = await file.to_file()
 
         if file_to_send:
-            await interaction.response.send_message(embed=embed, file=file_to_send)
+            await interaction.followup.send(embed=embed, file=file_to_send)
         else:
-            await interaction.response.send_message(embed=embed)
+            await interaction.followup.send(embed=embed)
 
     except discord.Forbidden:
-        await interaction.response.send_message("I don't have permissions to send messages here.", ephemeral=True)
+        print("The bot lacks permissions to send messages.")
     except discord.HTTPException as e:
         print(f"HTTP error: {e}")
-        await interaction.response.send_message("An error occurred while sending the embed.", ephemeral=True)
     except Exception as e:
         print(f"Unexpected error: {e}")
-        await interaction.response.send_message("Something went wrong.", ephemeral=True)
 
 @bot.tree.command(name="sendmessage", description="Sends a plain text message with an optional file")
 @app_commands.describe(
@@ -143,6 +143,8 @@ async def sendmessage(
     file: Optional[discord.Attachment] = None
 ):
     try:
+        await interaction.response.send_message("Message sent.", ephemeral=True)
+
         formatted_message = message.replace("\\n", "\n")
 
         file_to_send = None
@@ -150,18 +152,16 @@ async def sendmessage(
             file_to_send = await file.to_file()
 
         if file_to_send:
-            await interaction.response.send_message(content=formatted_message, file=file_to_send)
+            await interaction.followup.send(content=formatted_message, file=file_to_send)
         else:
-            await interaction.response.send_message(content=formatted_message)
+            await interaction.followup.send(content=formatted_message)
 
     except discord.Forbidden:
-        await interaction.response.send_message("I don't have permissions to send messages here.", ephemeral=True)
+        print("The bot lacks permissions to send messages.")
     except discord.HTTPException as e:
         print(f"HTTP error: {e}")
-        await interaction.response.send_message("An error occurred while sending the message.", ephemeral=True)
     except Exception as e:
         print(f"Unexpected error: {e}")
-        await interaction.response.send_message("Something went wrong.", ephemeral=True)
 
 token = input("Enter your bot token: ")
 bot.run(token)
